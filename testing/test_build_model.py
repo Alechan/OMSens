@@ -33,9 +33,13 @@ class TestsBuildModel(unittest.TestCase):
         model_name = "Model"
         start_time = 1
         stop_time  = 2
+
         # Initialize and call model builder
         test_model_builder = build_model.ModelicaModelBuilder(model_name, start_time, stop_time, model_file_path)
-        compiled_model = test_model_builder.buildToFolderPath(self._temp_dir)
+
+        base_dir = '/home/omsens/Documents/results_experiments/logging/'
+
+        compiled_model = test_model_builder.buildToFolderPath(self._temp_dir, base_dir)
         # Get script extensions regex
         regex = "{0}".format(model_name)
         # Get list of files from regex

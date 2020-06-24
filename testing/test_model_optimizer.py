@@ -27,8 +27,9 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
     def test_one_param_min(self):
         # Get the base arguments for the 3 params example
         model_name, start_time, stop_time, model_file_path, target_var_name, parameters_to_perturb, \
-               percentage, max_or_min, epsilon, build_folder_path = \
-            self.threeParamsModelOptimizerBaseArgsExample()
+            percentage, max_or_min, epsilon, build_folder_path, objective_function_name, optimizer_name, alpha_value, \
+            constrained_time_path_file = self.threeParamsModelOptimizerBaseArgsExample()
+
         # Replace the args so we only minimize one
         parameters_to_perturb = ["a"]
         percentage = 300
@@ -85,8 +86,9 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
     def test_one_param_max(self):
         # Get the base arguments for the 3 params example
         model_name, start_time, stop_time, model_file_path, target_var_name, parameters_to_perturb, \
-        percentage, max_or_min, epsilon, build_folder_path = \
-            self.threeParamsModelOptimizerBaseArgsExample()
+            percentage, max_or_min, epsilon, build_folder_path, objective_function_name, optimizer_name, alpha_value, \
+            constrained_time_path_file = self.threeParamsModelOptimizerBaseArgsExample()
+
         # Replace the args so we only maximize one
         parameters_to_perturb = ["a"]
         percentage = 100
@@ -101,7 +103,7 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
         # Check that it optimized correctly the X
         correct_x_opt = 2
         x_opt = x_opt_dict["a"]
-        if not numpy.isclose(correct_x_opt,x_opt,atol=epsilon):
+        if not numpy.isclose(correct_x_opt, x_opt, atol=epsilon):
             error_msg = "x_opt distance should be close to {0}" \
                         " but instead it is {1}".format(correct_x_opt,x_opt)
             self.fail(error_msg)
@@ -116,8 +118,8 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
     def test_multiple_params(self):
         # Get the base arguments for the 3 params example
         model_name, start_time, stop_time, model_file_path, target_var_name, parameters_to_perturb, \
-        percentage, max_or_min, epsilon, build_folder_path = \
-            self.threeParamsModelOptimizerBaseArgsExample()
+            percentage, max_or_min, epsilon, build_folder_path, objective_function_name, optimizer_name, alpha_value, \
+            constrained_time_path_file = self.threeParamsModelOptimizerBaseArgsExample()
         # Initialize optimizer
         model_optimizer = model_optimizer_f.ModelOptimizer(model_name, start_time, stop_time, model_file_path,
                                                            target_var_name, parameters_to_perturb, max_or_min,
@@ -144,8 +146,9 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
     def test_lower_bounds_work(self):
         # Get the base arguments for the 3 params example
         model_name, start_time, stop_time, model_file_path, target_var_name, parameters_to_perturb, \
-        percentage, max_or_min, epsilon, build_folder_path = \
-            self.threeParamsModelOptimizerBaseArgsExample()
+            percentage, max_or_min, epsilon, build_folder_path, objective_function_name, optimizer_name, alpha_value, \
+            constrained_time_path_file = self.threeParamsModelOptimizerBaseArgsExample()
+
         # Replace the args so we only minimize one
         parameters_to_perturb = ["a"]
         percentage = 400
@@ -168,8 +171,9 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
     def test_upper_bounds_work(self):
         # Get the base arguments for the 3 params example
         model_name, start_time, stop_time, model_file_path, target_var_name, parameters_to_perturb, \
-        percentage, max_or_min, epsilon, build_folder_path = \
-            self.threeParamsModelOptimizerBaseArgsExample()
+            percentage, max_or_min, epsilon, build_folder_path, objective_function_name, optimizer_name, alpha_value, \
+            constrained_time_path_file = self.threeParamsModelOptimizerBaseArgsExample()
+
         # Replace the args so we only minimize one
         parameters_to_perturb = ["a"]
         max_or_min = "max"
@@ -196,8 +200,9 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
     def test_epsilon_works(self):
         # Get the base arguments for the 3 params example
         model_name, start_time, stop_time, model_file_path, target_var_name, parameters_to_perturb, \
-        percentage, max_or_min, epsilon, build_folder_path = \
-            self.threeParamsModelOptimizerBaseArgsExample()
+            percentage, max_or_min, epsilon, build_folder_path, objective_function_name, optimizer_name, alpha_value, \
+            constrained_time_path_file = self.threeParamsModelOptimizerBaseArgsExample()
+
         # Replace the args so we only minimize one
         parameters_to_perturb = ["d"]
         percentage = 1000
@@ -205,7 +210,7 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
         # Initialize optimizer
         model_optimizer = model_optimizer_f.ModelOptimizer(model_name, start_time, stop_time, model_file_path,
                                                            target_var_name, parameters_to_perturb, max_or_min,
-                                                           build_folder_path)
+                                                           build_folder_path,objective_function_name, optimizer_name, alpha_value, constrained_time_path_file)
         # Run optimizer with permissive epsilon
         epsilon_permissive = 0.1
         optim_result_permissive = model_optimizer.optimize(percentage, epsilon_permissive)
@@ -235,8 +240,15 @@ class TestVectorialSensitivityAnalysis(unittest.TestCase):
         max_or_min = "min"
         epsilon = 0.001
         build_folder_path = self._temp_dir
+
+        objective_function_name = "CURVIFGR"
+        optimizer_name = "Single variable"
+        alpha_value = 0.5
+        constrained_time_path_file = "/home/omsens/limit_path.csv"
+
         return model_name, start_time, stop_time, model_file_path, target_var_name, parameters_to_perturb,\
-               percentage, max_or_min, epsilon, build_folder_path
+               percentage, max_or_min, epsilon, build_folder_path, \
+               objective_function_name, optimizer_name, alpha_value, constrained_time_path_file
 
 
 

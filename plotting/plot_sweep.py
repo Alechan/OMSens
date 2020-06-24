@@ -3,78 +3,76 @@ import os
 import numpy
 import pandas
 import matplotlib
+
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 
 # Project
 import plotting.plot_lines as plot_lines
 import plotting.plot_specs as plot_specs
+import logging
 
-class SweepPlotter():
+filehandler = logging.FileHandler("/home/omsens/Documents/results_experiments/logging/todo.log")
+logger = logging.getLogger("plot_in_folder")
+logger.addHandler(filehandler)
+logger.setLevel(logging.DEBUG)
+
+
+class SweepPlotter:
     def __init__(self, sweep_results):
         # Save args
+        logger.debug("Initialize SweepPlotter")
         self.sweep_results = sweep_results
         # Get swept params ids
         self.swept_params_ids_mapping = idsForSweptParams(sweep_results)
 
-    def plotInFolder(self, var_name, plots_folder_path, extra_ticks=[]):
-        # Define plot file name base
-        plot_path_without_extension = os.path.join(plots_folder_path, var_name)
-        # Define setup specs
+    def plotInFolder(self, var_name, plot_path_without_extension, with_upper_and_lower, extra_ticks = []):
+        logger.debug('Plotting in folder')
         setup_specs = self.plotSetupSpecsForSweep(var_name, extra_ticks)
-
-        # Make a list of all lines specs
         lines_specs = []
-
-        # Define what colors to use for lines that aren't std run
         colors_iter = colorsForNumberOfRuns(len(self.sweep_results.perturbed_runs))
-        # Iterate the sweep simulations initializing the respective line specs
+        
         for sweep_iter_results in self.sweep_results.perturbed_runs:
-            # Initialize line spec for perturbed run
             pert_run_line_specs = self.lineSpecForPerturbedRun(colors_iter, sweep_iter_results, var_name)
             lines_specs.append(pert_run_line_specs)
 
-        # Define standard run line specs that will be different than the other simulations results
+        # Continue
         std_run_line_specs = self.standardRunLineSpecs(var_name)
-        # Add it to the lines specs
         lines_specs.append(std_run_line_specs)
-
-        # Initialize plot_specs
         sweep_plot_specs = plot_specs.PlotSpecs(setup_specs, lines_specs)
-        # Initialize lines plotter
+
         lines_plotter = plot_lines.LinesPlotter(sweep_plot_specs)
-        # Plot
-        lines_plotter.plotInPath(plot_path_without_extension)
-        # Return only the .png plot path for now
+
+        lines_plotter.plotInPath(plot_path_without_extension, with_upper_and_lower)
+
         png_plot_path = "{0}.png".format(plot_path_without_extension)
         return png_plot_path
 
     def lineSpecForPerturbedRun(self, colors_iter, sweep_iter_results, var_name):
-        # Prepare information
-        # Get simulation specs for std run
-        simu_results = sweep_iter_results.simulation_results
-        file_path = simu_results.output_path
+
         # Read simulation results from disk
-        df_run = pandas.read_csv(file_path)
+        df_run = pandas.read_csv(sweep_iter_results.simulation_results.output_path)
+
         # Define conventions
-        x_var      = "time"
-        linewidth  = 1
-        linestyle  = "-"
+        x_var = "time"
+        linewidth = 1
+        linestyle = "-"
         markersize = 0
-        marker     = 'o'
-        label      = self.labelForPerturbedRun(sweep_iter_results)
-        color      = next(colors_iter)
+        marker = 'o'
+        label = self.labelForPerturbedRun(sweep_iter_results)
+        color = next(colors_iter)
+
         # Initialize plot line specs
         line_specs = plot_specs.PlotLineSpecs(
-            df        = df_run,
-            x_var     = x_var,
-            y_var     = var_name,
-            linewidth = linewidth,
-            linestyle = linestyle,
-            markersize= markersize,
-            marker    = marker,
-            label     = label,
-            color     = color,
+            df=df_run,
+            x_var=x_var,
+            y_var=var_name,
+            linewidth=linewidth,
+            linestyle=linestyle,
+            markersize=markersize,
+            marker=marker,
+            label=label,
+            color=color,
         )
         return line_specs
 
@@ -85,12 +83,12 @@ class SweepPlotter():
         y_label = ""
         # Initialize the plot setup specs
         setup_specs = plot_specs.PlotSetupSpecs(
-            title       = title,
-            subtitle    = subtitle,
-            footer      = footer,
-            x_label     = x_label,
-            y_label     = y_label ,
-            extra_ticks = extra_ticks
+            title=title,
+            subtitle=subtitle,
+            footer=footer,
+            x_label=x_label,
+            y_label=y_label,
+            extra_ticks=extra_ticks
         )
         return setup_specs
 
@@ -141,24 +139,24 @@ class SweepPlotter():
         # Read simulation results from disk
         df_simu = pandas.read_csv(std_run_specs.output_path)
         # Define conventions
-        x_var      = "time"
-        linewidth  = 4
-        linestyle  = ":"
+        x_var = "time"
+        linewidth = 4
+        linestyle = ":"
         markersize = 0
-        marker     = 'o'
-        label      = "STD_RUN"
-        color      = "black"
+        marker = 'o'
+        label = "STD_RUN"
+        color = "black"
         # Initialize plot line specs
         line_specs = plot_specs.PlotLineSpecs(
-            df        = df_simu,
-            x_var     = x_var,
-            y_var     = var_name,
-            linewidth = linewidth,
-            linestyle = linestyle,
-            markersize= markersize,
-            marker    = marker,
-            label     = label,
-            color     = color,
+            df=df_simu,
+            x_var=x_var,
+            y_var=var_name,
+            linewidth=linewidth,
+            linestyle=linestyle,
+            markersize=markersize,
+            marker=marker,
+            label=label,
+            color=color,
         )
         return line_specs
 
@@ -172,6 +170,7 @@ def strSignForNumber(number):
         sign_str = "+"
     return sign_str
 
+
 def perturbationPercentageStringForParam(p_info):
     if p_info.default_val != 0:
         # If the divisor is not 0, calculate the percentage accordingly
@@ -182,6 +181,7 @@ def perturbationPercentageStringForParam(p_info):
         # If the divisor is 0, there's nothing we can do. Just return a trivial string
         p_perturb_perc_str = "!"
     return p_perturb_perc_str
+
 
 def idsForSweptParams(sweep_specs):
     # Get the parameters that were swept
@@ -203,7 +203,3 @@ def fixedParamsStr(sweep_specs):
     joined_params_str = ", ".join(params_with_id_list)
     swept_params_info_str = "Constant perturbed parameters:  \n {0}".format(joined_params_str)
     return swept_params_info_str
-
-
-
-

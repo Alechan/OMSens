@@ -1,27 +1,36 @@
-class PlotSpecs():
+import logging
+
+filehandler = logging.FileHandler("/home/omsens/Documents/results_experiments/logging/plot_sweep.log")
+logger = logging.getLogger("plot_in_folder")
+logger.addHandler(filehandler)
+logger.setLevel(logging.DEBUG)
+logger.debug('inicializacion plot_specs')
+
+
+class PlotSpecs:
     def __init__(self, setup_specs, lines_specs):
         self.setup_specs = setup_specs
         self.lines_specs = lines_specs
 
 
-class PlotSetupSpecs():
+class PlotSetupSpecs:
     def __init__(self, title, subtitle, footer, x_label, y_label, extra_ticks):
-        self.title       = title
-        self.subtitle    = subtitle
-        self.footer      = footer
-        self.x_label     = x_label
-        self.y_label     = y_label
+        self.title = title
+        self.subtitle = subtitle
+        self.footer = footer
+        self.x_label = x_label
+        self.y_label = y_label
         self.extra_ticks = extra_ticks
 
 
-class PlotLineSpecs():
+class PlotLineSpecs:
     def __init__(self, df, x_var, y_var, linewidth, linestyle, markersize, marker, label, color):
-        self.df         = df
-        self.x_var      = x_var
-        self.y_var      = y_var
+        self.df = df
+        self.x_var = x_var
+        self.y_var = y_var
         self.linewidth = linewidth
-        self.linestyle  = linestyle
+        self.linestyle = linestyle
         self.markersize = markersize
-        self.marker     = marker
-        self.label      = label
-        self.color      = color
+        self.marker = marker
+        self.label = label
+        self.color = color

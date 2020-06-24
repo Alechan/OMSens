@@ -47,13 +47,15 @@ class TestMultiparameterSweep(unittest.TestCase):
                     error_msg = "The parameter '{0}' has val {1} when it should have val {2}".format(p, v1, v2)
                     self.fail(error_msg)
         # Test that the number of combinations are correct
-        vals_combinations_n = len(list(sweep_runner.runsPerturbedParameters()))
+        vals_combinations_n = len(list(sweep_runner.runsPerturbedParameters(None)))
         correct_n_runs = 12
         if vals_combinations_n != correct_n_runs:
             error_msg = "The sweep should have {0} runs but it had {1}".format(correct_n_runs, vals_combinations_n)
             self.fail(error_msg)
         # Test that the sweep "works"
-        sweep_results = sweep_runner.runSweep(self._temp_dir)
+
+
+        sweep_results, perturbed_param_run_id_map = sweep_runner.runSweep(self._temp_dir)
         # Check that the swept params are correct<
         swept_params = sweep_results.swept_parameters_names
         correct_swept_params = list(correct_vals_per_param.keys())

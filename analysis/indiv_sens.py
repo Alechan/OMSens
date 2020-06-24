@@ -1,5 +1,4 @@
 # Std
-import logging
 import math  # for sqrt
 import os  # for os.path
 import re  # regular expressions
@@ -12,11 +11,17 @@ import plotting.plot_heatmap as heatmap_f
 import modelica_interface.build_model as build_model
 import running.simulation_run_info as simu_run_info
 
-logger = logging.getLogger("--ParameterSensAnalysis--")  # this modules logger
+import logging
+filehandler = logging.FileHandler("/home/omsens/Documents/results_experiments/logging/individual_analysis.log")
+logger = logging.getLogger("individiual_analysis")
+logger.addHandler(filehandler)
+logger.setLevel(logging.DEBUG)
 
 
-class ParametersIsolatedPerturbator():
-    def __init__(self, model_name, model_file_path, start_time, stop_time, parameters, perc_perturb, build_folder_path):
+class ParametersIsolatedPerturbator:
+    def __init__(self, model_name, model_file_path, 
+                    start_time, stop_time, parameters, 
+                    perc_perturb, build_folder_path, base_dir, results_dirname):
         # Save args
         self.model_name = model_name
         self.model_file_path = model_file_path
@@ -24,13 +29,22 @@ class ParametersIsolatedPerturbator():
         self.stop_time = stop_time
         self.parameters = parameters
         self.perc_perturb = perc_perturb
+
         # Initialize builder
-        self.model_builder = build_model.ModelicaModelBuilder(model_name, start_time, stop_time, model_file_path)
+        logger.debug("Initialize builder")
+        self.model_builder = build_model.ModelicaModelBuilder(model_name, start_time, 
+                                                              stop_time, model_file_path)
+        
         # Build model
-        self.compiled_model = self.model_builder.buildToFolderPath(build_folder_path)
+        logger.debug("Build model")
+        self.compiled_model = self.model_builder.buildToFolderPath(build_folder_path, base_dir, results_dirname)
+        
         # Get the default values for the params to perturb using the compiled model
+        logger.debug('Get params defaults')
         self.params_defaults = self.defaultValuesForParamsToPerturb(self.compiled_model)
+        
         # Calculate the values per param
+        logger.debug('Calculate values per parameter')
         self.values_per_param = perturbedValuePerParam(self.params_defaults, self.parameters, self.perc_perturb)
 
     def runSimulations(self,dest_folder_path):

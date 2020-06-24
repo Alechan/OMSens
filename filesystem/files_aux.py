@@ -6,7 +6,10 @@ import re  # regex
 import subprocess
 from datetime import datetime
 
-logger = logging.getLogger("--Files aux funcs--")  # un logger especifico para este modulo
+filehandler = logging.FileHandler("/home/omsens/Documents/results_experiments/logging/files_aux.log")
+logger = logging.getLogger("files_aux")
+logger.addHandler(filehandler)
+logger.setLevel(logging.DEBUG)
 
 
 # Functions to get current directory, create folder, create "tmp" folder to dump results, etc
@@ -24,6 +27,7 @@ def makeOutputPath(folder_name="modelica_output"):
 def makeFolderWithPath(dest_path):
     if not os.path.exists(dest_path):
         os.makedirs(dest_path)
+
 
 def makeDirFromCurrentTimestamp(dest_path):
     logger.debug("Making timestamp dir")
@@ -47,19 +51,24 @@ def projectRoot():
     project_root = parentDir(currentdir)
     return project_root
 
+
 def tmpPath():
     currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
     parentdir = parentDir(currentdir)
     return os.path.join(parentdir, "tmp")
-    # return os.path.join(currentdir,"tmp")
+
 
 def moFilePathFromJSONMoPath(json_mo_path):
+    logger.debug("1")
+    logger.debug(json_mo_path)
     # Check if it's absolute path or relative path and act accordingly
     is_abs_path = os.path.isabs(json_mo_path)
     if is_abs_path:
+        logger.debug("2")
         # If it's already an absolute path, there's nothing to do
         mo_file_path = json_mo_path
     else:
+        logger.debug("3")
         # If it's a relative path, make it a relative path from the project root
         project_root_path = projectRoot()
         relative_to_project_root_path = os.path.join(project_root_path, json_mo_path)
@@ -75,15 +84,10 @@ def writeStrToFile(str_, file_path):
 
 
 def callCMDStringInPath(command, path):
-    # shell=True
+
     process = subprocess.Popen(command, stdout=subprocess.PIPE, shell=True, cwd=path)
-    # shell=False
-    # # Make list of strings splitting by whitespaces
-    # args = command.split(" ")
-    # # Remove invalid args
-    # args_cleaned = [x for x in args if x != ""]
-    # process = subprocess.Popen(args_cleaned, stdout=subprocess.PIPE, shell=False, cwd=path)
     output = process.communicate()[0]
+
     return output
 
 
@@ -98,7 +102,7 @@ def removeFilesWithRegexAndPath(regex, folder_path):
                 # If it's a folder, call folder deleter
                 shutil.rmtree(file_path)
             else:
-                error_msg ="The file in path {0} to delete is neither a file or a folder".format(x)
+                error_msg = "The file in path {0} to delete is neither a file or a folder".format(x)
                 raise Exception(error_msg)
 
 

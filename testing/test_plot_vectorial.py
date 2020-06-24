@@ -29,14 +29,14 @@ class TestVectorialPlot(unittest.TestCase):
 
     # Tests:
     def test_plot_vectorial_creates_files_in_folder(self):
-#        # Write CSV strs to file
-#        x0_run_csv_path = os.path.join(self._temp_dir, "x0_run.csv")
-#        files_aux.writeStrToFile(x0_run_str, x0_run_csv_path)
-#        x_opt_run_csv_path = os.path.join(self._temp_dir, "x_opt_run.csv")
-#        files_aux.writeStrToFile(x_opt_run_str, x_opt_run_csv_path)
-#        # Read df from strs
-#        df_x0_run = pandas.read_csv(x0_run_csv_path, index_col=0)
-#        df_x_opt_run = pandas.read_csv(x_opt_run_csv_path, index_col=0)
+        #        # Write CSV strs to file
+        #        x0_run_csv_path = os.path.join(self._temp_dir, "x0_run.csv")
+        #        files_aux.writeStrToFile(x0_run_str, x0_run_csv_path)
+        #        x_opt_run_csv_path = os.path.join(self._temp_dir, "x_opt_run.csv")
+        #        files_aux.writeStrToFile(x_opt_run_str, x_opt_run_csv_path)
+        #        # Read df from strs
+        #        df_x0_run = pandas.read_csv(x0_run_csv_path, index_col=0)
+        #        df_x_opt_run = pandas.read_csv(x_opt_run_csv_path, index_col=0)
 
         # Read df from strs
         df_x0_run = pandas.read_csv(StringIO(x0_run_str), index_col=0)

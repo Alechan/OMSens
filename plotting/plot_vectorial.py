@@ -1,53 +1,73 @@
-# Std
 import os
 import numpy
 import pandas
 import matplotlib
 matplotlib.use('Agg')
 import matplotlib.pyplot as plt
+import numpy as np
+import logging
 
-# Project
 import plotting.plot_lines as plot_lines
 import plotting.plot_specs as plot_specs
 
-class VectorialPlotter():
-    def __init__(self, optim_result, df_x0_run, df_x_opt_run):
-        # Save args
+filehandler = logging.FileHandler("/home/omsens/Documents/results_experiments/logging/vectorial_analysis.log")
+logger = logging.getLogger("vectorial_analysis")
+logger.addHandler(filehandler)
+logger.setLevel(logging.DEBUG)
+
+
+class VectorialPlotter:
+    def __init__(self, optim_result, df_x_opt_run, df_x0_run, df_restriction, var_optimization, var_restriction):
         self.optim_result = optim_result
-        self.df_x0_run    = df_x0_run
+
+        self.var_optimization = var_optimization
         self.df_x_opt_run = df_x_opt_run
 
+        self.df_x0_run = df_x0_run
+
+        self.var_restriction = var_restriction
+        self.df_restriction = df_restriction
+
+        # TODO: IMPORTANT. Check that the columns in df_x_opt_run, df_x0_run and df_restriction are consistent
+
     def plotInFolder(self, plots_folder_path, extra_ticks=[]):
-        # Define plot file name base
+        # logger.debug("enter plotInFolder")
         file_name_without_extension = self.optim_result.variable_name
         plot_path_without_extension = os.path.join(plots_folder_path, file_name_without_extension)
-        # Define setup specs
-        setup_specs = self.plotSetupSpecs(extra_ticks)
-        # Define std run specs
-        std_run_specs = self.standardRunLineSpecs()
-        # Define perturbed run specs
-        perturbed_run_specs = self.perturbedRunSpecs()
+        # logger.debug("Initialize perturbed run specs")
+        lines_specs = [self.perturbedRunSpecs()]
+        # Standard
+        if self.df_x0_run is not None:
+            df = self.df_x0_run
+            specs = self.regular_run_line_specs(df, self.var_optimization+'_STD-RUN', self.var_optimization, '-')
+            lines_specs.append(specs)
+        # Restriction
+        if self.df_restriction is not None:
+            # ax2 = ax[1].twinx()
+            df = self.df_restriction
+            specs = self.regular_run_line_specs(df, self.var_restriction+'-restriction', self.var_restriction, '--')
+            lines_specs.append(specs)
+
         # Initialize plot_specs
-        lines_specs = [std_run_specs, perturbed_run_specs]
+        logger.debug("Initialize plot_specs")
+        setup_specs = self.plotSetupSpecs(extra_ticks)
+
         vect_plot_specs = plot_specs.PlotSpecs(setup_specs, lines_specs)
-        # Initialize lines plotter
         lines_plotter = plot_lines.LinesPlotter(vect_plot_specs)
-        # Plot
         lines_plotter.plotInPath(plot_path_without_extension)
-        # Return only the .png plot path for now
         png_plot_path = "{0}.png".format(plot_path_without_extension)
         return png_plot_path
 
     def perturbedRunSpecs(self):
         # Prepare info
         df         = self.df_x_opt_run
-        x_var      = ""
+        x_var      = "time"
         y_var      = self.optim_result.variable_name
-        linewidth  = 1
+        linewidth  = 2
         linestyle  = "-"
         markersize = 0
         marker     = 'o'
-        label      = "optimum"
+        label      = self.optim_result.variable_name + "-optimum"
         color      = "red"
         # Initialize plot line specs
         std_run_specs = plot_specs.PlotLineSpecs(
@@ -63,16 +83,14 @@ class VectorialPlotter():
         )
         return std_run_specs
 
-    def standardRunLineSpecs(self):
+    def regular_run_line_specs(self, df, axis_name, variable_name, linestyle):
         # Prepare info
-        df         = self.df_x0_run
-        x_var      = ""
-        y_var      = self.optim_result.variable_name
+        x_var      = "time"
+        y_var      = variable_name
         linewidth  = 1
-        linestyle  = "-"
         markersize = 0
         marker     = 'o'
-        label      = "STD_RUN"
+        label      = axis_name
         color      = "black"
         # Initialize plot line specs
         std_run_specs = plot_specs.PlotLineSpecs(
@@ -88,10 +106,12 @@ class VectorialPlotter():
         )
         return std_run_specs
 
+    # TODO: add loss of constraint AND loss of objective variable (of course only when constrained is enforced)
     def plotSetupSpecs(self, extra_ticks):
         # Get the info for the plot setup specs
         title    = "Comparison between Standard and Optimum runs"
-        subtitle = "variable: {0}".format(self.optim_result.variable_name)
+        subtitle = "variable: {0} = {1}".format(self.optim_result.variable_name,
+                                                np.round(self.optim_result.target_optimum, 5))
         footer   = self.footerStr()
         x_label = "Time"
         y_label = ""
