@@ -128,8 +128,6 @@ def plot_variable(filename_path, runs_path, variable, time_value):
     # Generate scatter plot
     title = "ALL RUNS: " + variable + "(t=" + str(time_value) + ") "
 
-    # TODO: Agregar parametros que fueron sweepeados en estas corridas !!!
-
     ScatterPlotter.plot_variable({
         'filename_path': filename_path,
         'title': title,

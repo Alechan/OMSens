@@ -72,12 +72,16 @@ class ModelOptimizer:
                                                             target_var_name, max_or_min)
 
         elif self.objective_function_name == 'Alpha weighted path constrained':
-            # TODO: allow constrained path to depend on more than one single variable (read by parameter too from OM)
-            # logger.debug("Fetching df_origin")
+            # Path constrain depends on one single variable
             df_origin = pd.read_csv(constrained_time_path_file, index_col=False)
-            # TODO: makes not sense. A warning should be raised to the user
-            if self.constrained_variable not in list(df_origin.columns):
-                df_origin[self.constrained_variable] = 0
+            
+            # TODO: A warning should be raised to the user in front-end
+            df_origin_columns = list(df_origin.columns)
+            if self.constrained_variable not in df_origin_columns:
+                # (TODO: maybe add as optional, set some default constrain)
+                # df_origin[self.constrained_variable] = 0
+                # Set constrain defined in first column after the 'time' column in the constrained path file
+                df_origin[self.constrained_variable] = df_origin[df_origin_columns[1]]
 
             df_origin = df_origin[['time', self.constrained_variable]].rename(
                 columns={self.constrained_variable: 'value'})

@@ -121,8 +121,6 @@ def plot_variable(filename_path, runs_path, variable, time_value):
     # Generate histogram
     fig = plt.hist(vals, bins=bins)
 
-    # TODO: Definir si agregar o no parametros que fueron sweepeados en estas corridas !!!
-
     title = "Variable:" + variable + "(t=" + str(time_value) + ") "
     plt.title("\n".join(wrap(title, 40)))
     plt.xlabel(variable)

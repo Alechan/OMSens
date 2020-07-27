@@ -123,7 +123,8 @@ def perturbedValuePerParam(params_defaults, parameters, perc_perturb):
 def completeIndividualSensAnalysis(isolated_perturbations_results, target_vars, percentage_perturbed, specific_year,
                                    rms_first_year, rms_last_year, output_folder_analyses_path):
     # Create perturbed runs info list using the dict output form the mos script
-    #  TODO: adapt this function when we stop using tuples inside the analyzer in favor of using proper objects to represent the info
+    #  TODO: adapt this function when we stop using tuples inside the analyzer in favor of using proper objects 
+    # to represent the info
     perturbed_csvs_path_and_info_pairs = perturbationAsTuplesFromDict(isolated_perturbations_results)
     # Initialize result with paths
     sens_to_params_per_var = analysisPerParamPerturbedForEachVar(isolated_perturbations_results,percentage_perturbed,

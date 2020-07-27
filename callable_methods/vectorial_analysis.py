@@ -61,11 +61,11 @@ def analyzeFromJSON(dest_folder_path, json_file_path):
     # Prepare init args
     model_mo_path = files_aux.moFilePathFromJSONMoPath(full_json["model_mo_path"])
 
-    # TODO: check that the string in 'restriction_path' is effectively a directory'
+    # Note: Check that the string in 'restriction_path' is effectively a directory'
     base_dir = full_json["restriction_path"]
     results_dirname = base_dir + full_json["model_name"] + '_res.csv'
 
-    # TODO: implement 'intelligent alpha' so that the user doesn't need to iterate every time
+    # Future work: implement 'intelligent alpha' so that the user doesn't need to iterate every time
     plot_std = full_json["plot_std_run"]
     plot_restriction = full_json["plot_restriction"]
 
