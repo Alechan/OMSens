@@ -133,7 +133,7 @@ class TestCurvi(unittest.TestCase):
             error_msg = "abs(x_opt) should be close to {0} but instead it is {1}".format(correct_x_opt_abs,abs(x_opt))
             self.fail(error_msg)
         correct_f_opt = -4
-        if not numpy.isclose(f_opt,correct_f_opt):
+        if not numpy.isclose(f_opt, correct_f_opt, rtol=1e-04):
             error_msg = "f_opt should be close to {0} but instead it is {1}".format(correct_f_opt,f_opt)
             self.fail(error_msg)
 
