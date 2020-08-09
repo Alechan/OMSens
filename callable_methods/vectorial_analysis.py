@@ -143,7 +143,7 @@ def analyzeFromJSON(dest_folder_path, json_file_path):
         restriction = restriction[restriction['time'] <= df_x_opt_run['time'].max()]
         vect_plotter = plot_vect_f.VectorialPlotter(optim_result, df_x_opt_run, None, restriction, var_optimization, var_restriction)
     else:
-        raise Exception()
+        raise Exception("Please choose a plot option. We are still working on making this automatically.")
 
     # Plot
     plot_path = vect_plotter.plotInFolder(plots_folder_path)
